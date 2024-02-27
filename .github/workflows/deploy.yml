@@ -1,29 +1,15 @@
 name: Deploy Project
 on:
   push:
-    branches: ["main","develop"]
+    branches: [ "main","develop" ]
 
 jobs:
   Deploy:
     runs-on: ubuntu-latest
     steps:
-      - id: deploy
-        uses: bitovi/github-actions-deploy-github-runner-to-ec2@v0.1.1
+      - uses: actions/checkout@v4
+      - uses: webfactory/ssh-agent@v0.9.0
         with:
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID_DEVELOPMENT }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEVELOPMENT }}
-          aws_default_region: ap-northeast-2
-          additional_tags: '{\"key\":\"value\",\"key2\":\"value2\"}'
-
-          aws_vpc_id: vpc-04bb8e9c1346c1372
-          aws_vpc_subnet_id: subnet-0da166ab0fcd7a689
-
-          ec2_instance_type: t2.micro
-          ec2_instance_public_ip: true
-          ec2_additional_tags: '{\"key3\":\"value3\",\"key4\":\"value4\"}'
-          
-          repo_url: https://github.com/CamIsTrick/CIT_backend
-          repo_access_token: ${{ secrets.RUNNER_TOKEN }}
-
-          stack_destroy: false
-          tf_state_bucket_destroy: true
+          ssh-private-key: ${{ secrets.KEY }}
+      - name: Run Script
+        run: ls -al;
