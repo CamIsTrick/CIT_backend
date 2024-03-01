@@ -60,6 +60,17 @@ public class UserSession implements Closeable {
         return session;
     }
 
+    public String prepareToReceiveVideoFrom(UserSession sender, String sdpOffer) {
+        final WebRtcEndpoint incoming = getEndpointForUser(sender);
+        String sdpAnswer = incoming.processOffer(sdpOffer);
+        return sdpAnswer;
+    }
+
+    public void gatherCandidates(UserSession sender) {
+        final WebRtcEndpoint incoming = getEndpointForUser(sender);
+        incoming.gatherCandidates();
+    }
+
     private WebRtcEndpoint getEndpointForUser(final UserSession sender) {
         if (isLoopback(sender)) {
             return outgoingMedia;
