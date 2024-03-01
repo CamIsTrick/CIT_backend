@@ -2,8 +2,10 @@ package cit.camistrick.service;
 
 import com.google.gson.JsonObject;
 import org.kurento.client.Continuation;
+import org.kurento.client.IceCandidate;
 import org.kurento.client.MediaPipeline;
 import org.kurento.client.WebRtcEndpoint;
+import org.kurento.jsonrpc.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.WebSocketSession;
@@ -35,7 +37,15 @@ public class UserSession implements Closeable {
     }
 
     private void addIceCandidateListener(WebRtcEndpoint endpoint, String endpointName) {
-        // ICE Candidate 처리
+        endpoint.addIceCandidateFoundListener(event -> sendIceCandidateMessage(endpointName, event.getCandidate()));
+    }
+
+    private void sendIceCandidateMessage(String endpointName, IceCandidate candidate) {
+        JsonObject response = new JsonObject();
+        response.addProperty("id", "iceCandidate");
+        response.addProperty("name", endpointName);
+        response.add("candidate", JsonUtils.toJsonObject(candidate));
+        sendMessage(response);
     }
 
     public WebRtcEndpoint getOutgoingWebRtcPeer() {
@@ -129,6 +139,19 @@ public class UserSession implements Closeable {
 
     public void sendMessage(JsonObject message) {
         //WebSocket 통신
+    }
+
+    public void addCandidate(IceCandidate candidate, String name) {
+        if (this.name.compareTo(name) == 0) {
+            log.info("USER {} : outgoingMedia.addIceCandidate : {} ", this.name, name);
+            outgoingMedia.addIceCandidate(candidate);
+        } else {
+            WebRtcEndpoint webRtc = incomingMedia.get(name);
+            if (webRtc != null) {
+                log.info("USER {} : incoming.addIceCandidate to {} ", this.name, name);
+                webRtc.addIceCandidate(candidate);
+            }
+        }
     }
 
     @Override
