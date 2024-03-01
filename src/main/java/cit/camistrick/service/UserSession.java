@@ -8,9 +8,11 @@ import org.kurento.client.WebRtcEndpoint;
 import org.kurento.jsonrpc.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -149,7 +151,15 @@ public class UserSession implements Closeable {
     }
 
     public void sendMessage(JsonObject message) {
-        //WebSocket 통신
+        log.debug("USER {}: Sending message {}", name, message);
+
+        try {
+            synchronized (session) {
+                session.sendMessage(new TextMessage(message.toString()));
+            }
+        } catch (IOException e) {
+            log.debug(e.getMessage());
+        }
     }
 
     public void addCandidate(IceCandidate candidate, String name) {
