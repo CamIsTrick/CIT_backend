@@ -30,4 +30,21 @@ public class ReceiveVideoController {
         log.info("USER {}: SdpAnswer for {} receiveVideoAnswer", receiver.getName(), sender.getName());
         this.sendMessage(sender, receiveVideoResponse);
     }
+
+    public void receiveVideoFrom(UserSession sender, UserSession receiver, String sdpOffer) throws IOException {
+        log.info("USER {}: connecting with {} in room {}", receiver.getName(), sender.getName(), receiver.getRoomName());
+
+        log.trace("USER {}: SdpOffer for {} is {}", receiver.getName(), sender.getName(), sdpOffer);
+
+        final String ipSdpAnswer = sender.getEndpointForUser(sender).processOffer(sdpOffer);
+        final JsonObject scParams = new JsonObject();
+        scParams.addProperty("id", "receiveVideoAnswer");
+        scParams.addProperty("name", sender.getName());
+        scParams.addProperty("sdpAnswer", ipSdpAnswer);
+
+        log.trace("USER {}: SdpAnswer for {} is {}", receiver.getName(), sender.getName(), ipSdpAnswer);
+        this.sendMessage(sender, scParams);
+        log.debug("gather candidates");
+        sender.getEndpointForUser(sender).gatherCandidates();
+    }
 }
