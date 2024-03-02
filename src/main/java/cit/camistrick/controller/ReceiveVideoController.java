@@ -47,4 +47,28 @@ public class ReceiveVideoController {
         log.debug("gather candidates");
         sender.getEndpointForUser(sender).gatherCandidates();
     }
+
+    public void cancelVideoFrom(UserSession receiver, final UserSession sender) {
+        this.cancelVideoFrom(receiver, sender.getName());
+    }
+
+    public void cancelVideoFrom(UserSession receiver, final String senderName) {
+        log.debug("PARTICIPANT {}: canceling video reception from {}", receiver.getName(), senderName);
+        final WebRtcEndpoint incoming = receiver.incomingMedia.remove(senderName);
+
+        log.debug("PARTICIPANT {}: removing endpoint for {}", receiver.getName(), senderName);
+        incoming.release(new Continuation<Void>() {
+            @Override
+            public void onSuccess(Void result) throws Exception {
+                log.trace("PARTICIPANT {}: Released successfully incoming EP for {}",
+                        receiver.getName(), senderName);
+            }
+
+            @Override
+            public void onError(Throwable cause) throws Exception {
+                log.warn("PARTICIPANT {}: Could not release incoming EP for {}", receiver.getName(),
+                        senderName);
+            }
+        });
+    }
 }
