@@ -13,6 +13,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -22,6 +23,7 @@ public class UserSession implements Closeable {
 
     private final String name;
     private final WebSocketSession session;
+    private final String userId;
     private final MediaPipeline pipeline;
     private final WebRtcEndpoint outgoingMedia;
     private final ConcurrentMap<String, WebRtcEndpoint> incomingMedia = new ConcurrentHashMap<>();
@@ -30,6 +32,7 @@ public class UserSession implements Closeable {
         this.pipeline = pipeline;
         this.name = name;
         this.session = session;
+        this.userId = UUID.randomUUID().toString();
         this.outgoingMedia = createWebRtcEndpoint();
         addIceCandidateListener(this.outgoingMedia, this.name);
     }
@@ -60,6 +63,10 @@ public class UserSession implements Closeable {
 
     public WebSocketSession getSession() {
         return session;
+    }
+
+    public String getUserId() {
+        return userId;
     }
 
     public String prepareToReceiveVideoFrom(UserSession sender, String sdpOffer) {
@@ -182,7 +189,7 @@ public class UserSession implements Closeable {
         }
 
         if (obj instanceof UserSession other) {
-            return name.equals(other.name);
+            return userId.equals(other.userId);
         }
 
         return false;
@@ -190,6 +197,6 @@ public class UserSession implements Closeable {
 
     @Override
     public int hashCode() {
-        return name.hashCode();
+        return userId.hashCode();
     }
 }
