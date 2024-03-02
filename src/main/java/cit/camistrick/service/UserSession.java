@@ -166,12 +166,13 @@ public class UserSession implements Closeable {
         if (this.name.compareTo(name) == 0) {
             log.info("USER {} : outgoingMedia.addIceCandidate : {} ", this.name, name);
             outgoingMedia.addIceCandidate(candidate);
-        } else {
-            WebRtcEndpoint webRtc = incomingMedia.get(name);
-            if (webRtc != null) {
-                log.info("USER {} : incoming.addIceCandidate to {} ", this.name, name);
-                webRtc.addIceCandidate(candidate);
-            }
+            return ;
+        }
+        
+        WebRtcEndpoint webRtc = incomingMedia.get(name);
+        if (webRtc != null) {
+            log.info("USER {} : incoming.addIceCandidate to {} ", this.name, name);
+            webRtc.addIceCandidate(candidate);
         }
     }
 
