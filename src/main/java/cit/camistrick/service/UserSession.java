@@ -13,7 +13,6 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -23,7 +22,6 @@ public class UserSession implements Closeable {
 
     private final String name;
     private final WebSocketSession session;
-    private final String userId;
     private final MediaPipeline pipeline;
     private final WebRtcEndpoint outgoingMedia;
     private final ConcurrentMap<String, WebRtcEndpoint> incomingMedia = new ConcurrentHashMap<>();
@@ -32,7 +30,6 @@ public class UserSession implements Closeable {
         this.pipeline = pipeline;
         this.name = name;
         this.session = session;
-        this.userId = UUID.randomUUID().toString();
         this.outgoingMedia = createWebRtcEndpoint();
         addIceCandidateListener(this.outgoingMedia, this.name);
     }
@@ -65,8 +62,8 @@ public class UserSession implements Closeable {
         return session;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getSessionId() {
+        return session.getId();
     }
 
     public String prepareToReceiveVideoFrom(UserSession sender, String sdpOffer) {
@@ -130,14 +127,12 @@ public class UserSession implements Closeable {
         endpoint.release(new Continuation<>() {
             @Override
             public void onSuccess(Void result) {
-                log.trace("PARTICIPANT {}: Released successfully incoming EP for {}",
-                        UserSession.this.name, endpointName);
+                log.trace("PARTICIPANT {}: Released successfully incoming EP for {}", UserSession.this.name, endpointName);
             }
 
             @Override
             public void onError(Throwable cause) {
-                log.warn("PARTICIPANT {}: Could not release incoming EP for {}", UserSession.this.name,
-                        endpointName);
+                log.warn("PARTICIPANT {}: Could not release incoming EP for {}", UserSession.this.name, endpointName);
             }
         });
     }
@@ -173,9 +168,9 @@ public class UserSession implements Closeable {
         if (this.name.compareTo(name) == 0) {
             log.info("USER {} : outgoingMedia.addIceCandidate : {} ", this.name, name);
             outgoingMedia.addIceCandidate(candidate);
-            return ;
+            return;
         }
-        
+
         WebRtcEndpoint webRtc = incomingMedia.get(name);
         if (webRtc != null) {
             log.info("USER {} : incoming.addIceCandidate to {} ", this.name, name);
@@ -190,7 +185,7 @@ public class UserSession implements Closeable {
         }
 
         if (obj instanceof UserSession other) {
-            return userId.equals(other.userId);
+            return session.getId().equals(other.getSessionId());
         }
 
         return false;
@@ -198,6 +193,6 @@ public class UserSession implements Closeable {
 
     @Override
     public int hashCode() {
-        return userId.hashCode();
+        return session.getId().hashCode();
     }
 }
