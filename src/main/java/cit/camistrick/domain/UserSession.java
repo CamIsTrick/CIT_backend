@@ -22,10 +22,10 @@ public class UserSession implements Closeable {
 
     private final String name;
     private final WebSocketSession session;
-    private String roomId;
     private final MediaPipeline pipeline;
     private final WebRtcEndpoint outgoingMedia;
     private final ConcurrentMap<String, WebRtcEndpoint> incomingMedia = new ConcurrentHashMap<>();
+    private final String roomId;
 
     public UserSession(final String name, String roomId, final WebSocketSession session, MediaPipeline pipeline) {
         this.pipeline = pipeline;
@@ -67,7 +67,6 @@ public class UserSession implements Closeable {
     public String getRoomId() {
         return this.roomId;
     }
-
 
     public String getSessionId() {
         return session.getId();
