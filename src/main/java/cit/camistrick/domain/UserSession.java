@@ -1,4 +1,4 @@
-package cit.camistrick.service;
+package cit.camistrick.domain;
 
 import com.google.gson.JsonObject;
 import org.kurento.client.Continuation;
@@ -22,14 +22,16 @@ public class UserSession implements Closeable {
 
     private final String name;
     private final WebSocketSession session;
+    private String roomId;
     private final MediaPipeline pipeline;
     private final WebRtcEndpoint outgoingMedia;
     private final ConcurrentMap<String, WebRtcEndpoint> incomingMedia = new ConcurrentHashMap<>();
 
-    public UserSession(final String name, final WebSocketSession session, MediaPipeline pipeline) {
+    public UserSession(final String name, String roomId, final WebSocketSession session, MediaPipeline pipeline) {
         this.pipeline = pipeline;
         this.name = name;
         this.session = session;
+        this.roomId = roomId;
         this.outgoingMedia = createWebRtcEndpoint();
         addIceCandidateListener(this.outgoingMedia, this.name);
     }
@@ -61,6 +63,11 @@ public class UserSession implements Closeable {
     public WebSocketSession getSession() {
         return session;
     }
+
+    public String getRoomId() {
+        return this.roomId;
+    }
+
 
     public String getSessionId() {
         return session.getId();
@@ -165,7 +172,7 @@ public class UserSession implements Closeable {
     }
 
     public void addCandidate(IceCandidate candidate, String name) {
-        if (this.name.compareTo(name) == 0) {
+        if (this.name.equals(name)) {
             log.info("USER {} : outgoingMedia.addIceCandidate : {} ", this.name, name);
             outgoingMedia.addIceCandidate(candidate);
             return;
