@@ -12,13 +12,13 @@ public class KurentoActionResolver {
     private final Map<String, KurentoAction> handlerMap;
 
     public KurentoActionResolver(Map<String, KurentoAction> handlerMap) {
-        this.handlerMap = Optional.ofNullable(handlerMap).orElse(Collections.emptyMap());
+        this.handlerMap = Optional.ofNullable(handlerMap)
+                                  .orElse(Collections.emptyMap());
     }
 
     public KurentoAction findAction(String id) {
         return handlerMap.getOrDefault(id, handlerMap.get(NOT_MATCH_ID));
     }
-
 
     public KurentoAction getCloseAction() {
         return findAction(CLOSE_ID);

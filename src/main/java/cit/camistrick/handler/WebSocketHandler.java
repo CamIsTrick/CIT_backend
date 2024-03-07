@@ -26,7 +26,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) {
         JsonObject jsonMessage = gson.fromJson(message.getPayload(), JsonObject.class);
-        String id = Optional.ofNullable(jsonMessage.get("id")).map(JsonElement::getAsString).orElse("error");
+        String id = Optional.ofNullable(jsonMessage.get("id"))
+                            .map(JsonElement::getAsString)
+                             .orElse("error");
         log.info("Receive ID [{}] from {} ", id, session.getId());
 
         KurentoAction findAction = kurentoActionResolver.findAction(id);
