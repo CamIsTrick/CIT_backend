@@ -1,25 +1,19 @@
 package cit.camistrick.service;
 
 import cit.camistrick.domain.Room;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.kurento.client.KurentoClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-@Service
+@Slf4j
+@RequiredArgsConstructor
 public class RoomManager {
-
-    private final Logger log = LoggerFactory.getLogger(RoomManager.class);
-
-    @Autowired
-    private KurentoClient kurento;
-
+    private final KurentoClient kurento;
     private final ConcurrentMap<String, Room> rooms = new ConcurrentHashMap<>();
 
     public Optional<Room> findRoom(String roomId) {

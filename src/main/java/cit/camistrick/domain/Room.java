@@ -1,10 +1,9 @@
 package cit.camistrick.domain;
 
 import com.google.gson.JsonObject;
+import lombok.extern.slf4j.Slf4j;
 import org.kurento.client.Continuation;
 import org.kurento.client.MediaPipeline;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.WebSocketSession;
 
 import javax.annotation.PreDestroy;
@@ -16,9 +15,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+@Slf4j
 public class Room implements Closeable {
-    private final Logger log = LoggerFactory.getLogger(Room.class);
-
     private final ConcurrentMap<String, UserSession> participants = new ConcurrentHashMap<>();
     private final String roomId;
     private final MediaPipeline pipeline;
@@ -42,7 +40,7 @@ public class Room implements Closeable {
         this.close();
     }
 
-    public UserSession join(String userName, WebSocketSession session) throws IOException {
+    public UserSession join(String userName, WebSocketSession session) {
         log.info("ROOM [{}]: adding participant [{}]", roomId, userName);
         final UserSession participant = new UserSession(userName, roomId, session, pipeline);
         addUserSession(participant);
