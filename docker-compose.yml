@@ -10,7 +10,12 @@ services:
       - KMS_EXTERNAL_IPV4= 3.39.179.45
 
   nginx:
-    build: /dockerfiles/
+    build: .
     ports:
       - "80:80"
       - "443:443"
+
+  spring:
+    build: .
+    ports:
+      - "8081:8081"
