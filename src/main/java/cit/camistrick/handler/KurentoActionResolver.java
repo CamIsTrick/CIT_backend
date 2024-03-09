@@ -13,7 +13,7 @@ public class KurentoActionResolver {
 
     public KurentoActionResolver(Map<String, KurentoAction> handlerMap) {
         this.handlerMap = Optional.ofNullable(handlerMap)
-                                  .orElse(Collections.emptyMap());
+                .orElse(Collections.emptyMap());
     }
 
     public KurentoAction findAction(String id) {

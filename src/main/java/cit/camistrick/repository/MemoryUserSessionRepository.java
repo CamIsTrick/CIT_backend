@@ -20,7 +20,7 @@ public class MemoryUserSessionRepository implements UserSessionRepository {
     }
 
     public List<UserSession> findAllByRoomId(String roomId) {
-        Room room = roomManager.getRoom(roomId);
+        Room room = roomManager.findRoom(roomId).get();
         if (room != null) {
             return room.getAllUserSessions();
         }
@@ -30,8 +30,8 @@ public class MemoryUserSessionRepository implements UserSessionRepository {
     @Override
     public List<UserSession> getAllSession() {
         return userBySessionId.values()
-                              .stream()
-                              .toList();
+                .stream()
+                .toList();
     }
 
     @Override

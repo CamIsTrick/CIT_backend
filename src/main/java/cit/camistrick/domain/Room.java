@@ -54,9 +54,8 @@ public class Room implements Closeable {
         removeUserSession(user);
     }
 
-    public void addUserSession(UserSession userSession) throws IOException {
+    public void addUserSession(UserSession userSession) {
         participants.put(userSession.getSessionId(), userSession);
-        notifyParticipantsOfNewUser(userSession);
     }
 
     public void removeUserSession(UserSession userSession) throws IOException {
@@ -65,7 +64,7 @@ public class Room implements Closeable {
         userSession.close();
     }
 
-    private void notifyParticipantsOfNewUser(UserSession newParticipant) throws IOException {
+    public void notifyParticipantsOfNewUser(UserSession newParticipant) {
         final JsonObject newParticipantMsg = new JsonObject();
         newParticipantMsg.addProperty("id", "newParticipantArrived");
         newParticipantMsg.addProperty("name", newParticipant.getName());

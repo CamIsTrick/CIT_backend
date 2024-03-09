@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -18,20 +20,14 @@ public class RoomManager {
 
     private final ConcurrentMap<String, Room> rooms = new ConcurrentHashMap<>();
 
-    public Room getRoom(String roomId) {
-        log.debug("Searching for room {}", roomId);
-        Room room = rooms.get(roomId);
-
-        if (room == null) {
-            room = createRoom(roomId);
-        }
-
-        log.debug("Room {} found!", roomId);
-        return room;
+    public Optional<Room> findRoom(String roomId) {
+        log.info("Searching for room {}", roomId);
+        return Optional.ofNullable(rooms.get(roomId));
     }
 
-    private Room createRoom(String roomId) {
-        log.debug("Room {} not existent. Creating now!", roomId);
+    public Room createRoom() {
+        String roomId = UUID.randomUUID().toString();
+        log.debug("Room {} not exist. Creating now!", roomId);
         Room room = new Room(roomId, kurento.createMediaPipeline());
         rooms.put(roomId, room);
         return room;
