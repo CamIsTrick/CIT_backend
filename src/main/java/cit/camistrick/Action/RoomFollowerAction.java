@@ -6,7 +6,6 @@ import cit.camistrick.service.RoomManager;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.kurento.client.MediaPipeline;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
@@ -15,9 +14,7 @@ import java.util.NoSuchElementException;
 @Slf4j
 @RequiredArgsConstructor
 public class RoomFollowerAction implements KurentoAction {
-
     private final RoomManager roomManager;
-    private final MediaPipeline mediaPipeline;
 
     @Override
     public void process(WebSocketSession session, JsonObject jsonMessage) throws IOException {
@@ -49,12 +46,14 @@ public class RoomFollowerAction implements KurentoAction {
     private void joinRoom(WebSocketSession session, String username, String roomId) {
         Room findRoom = roomManager.findRoom(roomId)
                 .orElseThrow(NoSuchElementException::new);
-
-        UserSession user = new UserSession(username, findRoom.getRoomId(), session, mediaPipeline);
-
-        findRoom.addUserSession(user);
+        log.info("findRoom Id : [{}]", findRoom.getRoomId());
+        UserSession user = findRoom.join(username, session);
         findRoom.notifyParticipantsOfNewUser(user);
 
+        sendResponseMessage(findRoom, user);
+    }
+
+    private void sendResponseMessage(Room findRoom, UserSession user) {
         JsonObject newParticipantMsg = new JsonObject();
         newParticipantMsg.addProperty("id", "newParticipantArrived");
         newParticipantMsg.addProperty("name", user.getName());
