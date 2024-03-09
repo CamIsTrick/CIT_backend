@@ -79,7 +79,7 @@ public class Room implements Closeable {
         broadcastMessage(participantLeftMsg);
     }
 
-    private void broadcastMessage(JsonObject message) {
+    public void broadcastMessage(JsonObject message) {
         for (UserSession participant : participants.values()) {
             participant.sendMessage(message);
         }

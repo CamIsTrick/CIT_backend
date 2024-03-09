@@ -1,6 +1,6 @@
 package cit.camistrick.handler;
 
-import cit.camistrick.Action.KurentoAction;
+import cit.camistrick.action.KurentoAction;
 
 import java.util.Collections;
 import java.util.Map;
