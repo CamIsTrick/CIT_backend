@@ -3,6 +3,7 @@ package cit.camistrick.repository;
 import cit.camistrick.domain.Room;
 import cit.camistrick.domain.UserSession;
 import cit.camistrick.service.RoomManager;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
@@ -10,9 +11,10 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
+@RequiredArgsConstructor
 public class MemoryUserSessionRepository implements UserSessionRepository {
     private final ConcurrentHashMap<String, UserSession> userBySessionId = new ConcurrentHashMap<>();
-    private final RoomManager roomManager = new RoomManager();
+    private final RoomManager roomManager;
 
     @Override
     public UserSession findBySessionId(String sessionId) {

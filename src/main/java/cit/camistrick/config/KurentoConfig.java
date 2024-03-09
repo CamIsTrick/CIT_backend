@@ -6,7 +6,6 @@ import cit.camistrick.handler.KurentoActionResolver;
 import cit.camistrick.handler.WebSocketHandler;
 import cit.camistrick.service.RoomManager;
 import org.kurento.client.KurentoClient;
-import org.kurento.client.MediaPipeline;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,17 +54,13 @@ public class KurentoConfig implements WebSocketConfigurer {
     @Bean
     public KurentoActionResolver configKurentoHandler() {
         return new KurentoActionResolver(Map.of(
-                "createRoom", new RoomLeaderAction(roomManager(), createMediaPipeLine()),
-                "joinRoom", new RoomFollowerAction(roomManager(), createMediaPipeLine())
+                "createRoom", new RoomLeaderAction(roomManager()),
+                "joinRoom", new RoomFollowerAction(roomManager())
         ));
     }
 
     @Bean
     public RoomManager roomManager() {
-        return new RoomManager();
-    }
-
-    private MediaPipeline createMediaPipeLine() {
-        return kurentoClient().createMediaPipeline();
+        return new RoomManager(kurentoClient());
     }
 }
