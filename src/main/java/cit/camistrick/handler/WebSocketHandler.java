@@ -1,6 +1,6 @@
 package cit.camistrick.handler;
 
-import cit.camistrick.Action.KurentoAction;
+import cit.camistrick.action.KurentoAction;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -27,8 +27,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
     public void handleTextMessage(WebSocketSession session, TextMessage message) {
         JsonObject jsonMessage = gson.fromJson(message.getPayload(), JsonObject.class);
         String id = Optional.ofNullable(jsonMessage.get("id"))
-                            .map(JsonElement::getAsString)
-                             .orElse("error");
+                .map(JsonElement::getAsString)
+                .orElse("error");
         log.info("Receive ID [{}] from {} ", id, session.getId());
 
         KurentoAction findAction = kurentoActionResolver.findAction(id);
