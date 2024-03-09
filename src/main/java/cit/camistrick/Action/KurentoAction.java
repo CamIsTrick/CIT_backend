@@ -1,4 +1,4 @@
-package cit.camistrick.Action;
+package cit.camistrick.action;
 
 import com.google.gson.JsonObject;
 import org.springframework.stereotype.Component;

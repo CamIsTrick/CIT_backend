@@ -1,10 +1,9 @@
 package cit.camistrick.domain;
 
 import com.google.gson.JsonObject;
+import lombok.extern.slf4j.Slf4j;
 import org.kurento.client.Continuation;
 import org.kurento.client.MediaPipeline;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.WebSocketSession;
 
 import javax.annotation.PreDestroy;
@@ -16,9 +15,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+@Slf4j
 public class Room implements Closeable {
-    private final Logger log = LoggerFactory.getLogger(Room.class);
-
     private final ConcurrentMap<String, UserSession> participants = new ConcurrentHashMap<>();
     private final String roomId;
     private final MediaPipeline pipeline;
@@ -42,7 +40,7 @@ public class Room implements Closeable {
         this.close();
     }
 
-    public UserSession join(String userName, WebSocketSession session) throws IOException {
+    public UserSession join(String userName, WebSocketSession session) {
         log.info("ROOM [{}]: adding participant [{}]", roomId, userName);
         final UserSession participant = new UserSession(userName, roomId, session, pipeline);
         addUserSession(participant);
@@ -54,9 +52,8 @@ public class Room implements Closeable {
         removeUserSession(user);
     }
 
-    public void addUserSession(UserSession userSession) throws IOException {
+    public void addUserSession(UserSession userSession) {
         participants.put(userSession.getSessionId(), userSession);
-        notifyParticipantsOfNewUser(userSession);
     }
 
     public void removeUserSession(UserSession userSession) throws IOException {
@@ -65,7 +62,7 @@ public class Room implements Closeable {
         userSession.close();
     }
 
-    private void notifyParticipantsOfNewUser(UserSession newParticipant) throws IOException {
+    public void notifyParticipantsOfNewUser(UserSession newParticipant) {
         final JsonObject newParticipantMsg = new JsonObject();
         newParticipantMsg.addProperty("id", "newParticipantArrived");
         newParticipantMsg.addProperty("name", newParticipant.getName());
@@ -80,7 +77,7 @@ public class Room implements Closeable {
         broadcastMessage(participantLeftMsg);
     }
 
-    private void broadcastMessage(JsonObject message) {
+    public void broadcastMessage(JsonObject message) {
         for (UserSession participant : participants.values()) {
             participant.sendMessage(message);
         }

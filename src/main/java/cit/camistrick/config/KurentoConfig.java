@@ -1,7 +1,10 @@
 package cit.camistrick.config;
 
+import cit.camistrick.action.RoomFollowerAction;
+import cit.camistrick.action.RoomLeaderAction;
 import cit.camistrick.handler.KurentoActionResolver;
 import cit.camistrick.handler.WebSocketHandler;
+import cit.camistrick.service.RoomManager;
 import org.kurento.client.KurentoClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -50,7 +53,14 @@ public class KurentoConfig implements WebSocketConfigurer {
 
     @Bean
     public KurentoActionResolver configKurentoHandler() {
-        return new KurentoActionResolver(
-                Map.of());
+        return new KurentoActionResolver(Map.of(
+                "createRoom", new RoomLeaderAction(roomManager()),
+                "joinRoom", new RoomFollowerAction(roomManager())
+        ));
+    }
+
+    @Bean
+    public RoomManager roomManager() {
+        return new RoomManager(kurentoClient());
     }
 }

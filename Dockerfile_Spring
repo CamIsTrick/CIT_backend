@@ -1,0 +1,16 @@
+# 스프링 프로젝트 빌드
+FROM openjdk:17-jdk-slim AS builder
+LABEL authors="junpyohong"
+
+WORKDIR /app
+COPY . .
+
+RUN ls -al
+RUN ./gradlew clean build -x test
+
+# 두 번째 스테이지: 실행 환경
+FROM openjdk:17-jdk-slim
+WORKDIR /
+# 첫 번째 스테이지에서 빌드된 실행 파일을 복사
+COPY --from=builder /app/build/libs/*.jar app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
