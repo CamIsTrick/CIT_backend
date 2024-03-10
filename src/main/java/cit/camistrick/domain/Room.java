@@ -31,8 +31,6 @@ public class Room implements Closeable {
         return roomId;
     }
 
-    public MediaPipeline getPipeline() { return  pipeline; }
-
     public List<UserSession> getAllUserSessions() {
         return new ArrayList<>(participants.values());
     }
@@ -68,7 +66,7 @@ public class Room implements Closeable {
         final JsonObject newParticipantMsg = new JsonObject();
         newParticipantMsg.addProperty("id", "newParticipantArrived");
         newParticipantMsg.addProperty("name", newParticipant.getName());
-        broadcastMessage(newParticipantMsg);
+        broadcastMessage(newParticipant, newParticipantMsg);
     }
 
     private void notifyParticipantsOfUserLeaving(UserSession leavingUser) throws IOException {
@@ -76,12 +74,14 @@ public class Room implements Closeable {
         participantLeftMsg.addProperty("id", "participantLeft");
         participantLeftMsg.addProperty("name", leavingUser.getName());
         notifyParticipantsOfCancelVideoFrom(leavingUser.getName());
-        broadcastMessage(participantLeftMsg);
+        broadcastMessage(leavingUser, participantLeftMsg);
     }
 
-    private void broadcastMessage(JsonObject message) {
+    private void broadcastMessage(UserSession sender, JsonObject message) {
         for (UserSession participant : participants.values()) {
-            participant.sendMessage(message);
+            if (!participant.equals(sender)) {
+                participant.sendMessage(message);
+            }
         }
     }
 
