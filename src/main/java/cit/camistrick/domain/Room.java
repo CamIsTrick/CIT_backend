@@ -31,6 +31,8 @@ public class Room implements Closeable {
         return roomId;
     }
 
+    public MediaPipeline getPipeline() { return  pipeline; }
+
     public List<UserSession> getAllUserSessions() {
         return new ArrayList<>(participants.values());
     }
@@ -42,7 +44,7 @@ public class Room implements Closeable {
 
     public UserSession join(String userName, String roomId, WebSocketSession session) {
         log.info("ROOM [{}]: adding participant [{}]", roomId, userName);
-        final UserSession participant = new UserSession(userName, roomId, session, pipeline);
+        final UserSession participant = UserSession.createUserSession(userName, roomId, session, pipeline);
         addUserSession(participant);
         return participant;
     }

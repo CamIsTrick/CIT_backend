@@ -16,7 +16,6 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class RoomFollowerAction implements KurentoAction {
     private final RoomManager roomManager;
-    private final Room room;
 
     @Override
     public void process(WebSocketSession session, JsonObject jsonMessage) throws IOException {
@@ -46,9 +45,9 @@ public class RoomFollowerAction implements KurentoAction {
     }
 
     private void joinRoom(WebSocketSession session, String username, String roomId) {
-        UserSession participant = room.join(username, roomId, session);
         Room findRoom = roomManager.findRoom(roomId)
                 .orElseThrow(NoSuchElementException::new);
+        UserSession participant = findRoom.join(username, roomId, session);
         findRoom.notifyParticipantsOfNewUser(participant);
     }
 

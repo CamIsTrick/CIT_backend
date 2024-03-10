@@ -1,6 +1,7 @@
 package cit.camistrick.action;
 
 import cit.camistrick.domain.Room;
+import cit.camistrick.domain.UserSession;
 import cit.camistrick.service.RoomManager;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +32,11 @@ public class RoomLeaderAction implements KurentoAction {
         } else {
             log.info("name : {}", username);
         }
-        initUserSession(session, username);
+
+        createRoom(session, username);
     }
 
-    private void initUserSession(WebSocketSession session, String username) {
+    private void createRoom(WebSocketSession session, String username) {
         Room room = roomManager.createRoom();
         room.join(username, room.getRoomId(), session);
     }

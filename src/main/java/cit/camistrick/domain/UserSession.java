@@ -33,6 +33,11 @@ public class UserSession implements Closeable {
         addIceCandidateListener(this.outgoingMedia, this.name);
     }
 
+    public static UserSession createUserSession(String name, String roomId, WebSocketSession session, MediaPipeline pipeline) {
+        UserSession user = new UserSession(name, roomId, session, pipeline);
+        return user;
+    }
+
     private WebRtcEndpoint createWebRtcEndpoint() {
         return new WebRtcEndpoint.Builder(pipeline).build();
     }
