@@ -33,10 +33,10 @@ public class RoomLeaderAction implements KurentoAction {
             log.info("name : {}", username);
         }
 
-        createRoom(session, username);
+        createRoomAndSession(session, username);
     }
 
-    private void createRoom(WebSocketSession session, String username) {
+    private void createRoomAndSession(WebSocketSession session, String username) {
         Room room = roomManager.createRoom();
         room.join(username, room.getRoomId(), session);
     }
