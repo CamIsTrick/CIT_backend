@@ -6,7 +6,6 @@ import cit.camistrick.service.RoomManager;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
