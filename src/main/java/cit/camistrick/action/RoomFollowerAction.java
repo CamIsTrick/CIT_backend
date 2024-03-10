@@ -46,19 +46,8 @@ public class RoomFollowerAction implements KurentoAction {
     private void joinRoom(WebSocketSession session, String username, String roomId) {
         Room findRoom = roomManager.findRoom(roomId)
                 .orElseThrow(NoSuchElementException::new);
-        log.info("findRoom Id : [{}]", findRoom.getRoomId());
-        UserSession user = findRoom.join(username, session);
-        findRoom.notifyParticipantsOfNewUser(user);
-
-        sendResponseMessage(findRoom, user);
-    }
-
-    private void sendResponseMessage(Room findRoom, UserSession user) {
-        JsonObject newParticipantMsg = new JsonObject();
-        newParticipantMsg.addProperty("id", "newParticipantArrived");
-        newParticipantMsg.addProperty("name", user.getName());
-
-        findRoom.broadcastMessage(newParticipantMsg);
+        UserSession participant = findRoom.join(username, roomId, session);
+        findRoom.notifyParticipantsOfNewUser(participant);
     }
 
     @Override

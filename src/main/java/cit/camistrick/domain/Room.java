@@ -40,9 +40,9 @@ public class Room implements Closeable {
         this.close();
     }
 
-    public UserSession join(String userName, WebSocketSession session) {
+    public UserSession join(String userName, String roomId, WebSocketSession session) {
         log.info("ROOM [{}]: adding participant [{}]", roomId, userName);
-        final UserSession participant = new UserSession(userName, roomId, session, pipeline);
+        final UserSession participant = UserSession.createUserSession(userName, roomId, session, pipeline);
         addUserSession(participant);
         return participant;
     }
@@ -77,7 +77,7 @@ public class Room implements Closeable {
         broadcastMessage(participantLeftMsg);
     }
 
-    public void broadcastMessage(JsonObject message) {
+    private void broadcastMessage(JsonObject message) {
         for (UserSession participant : participants.values()) {
             participant.sendMessage(message);
         }
