@@ -1,8 +1,6 @@
 package cit.camistrick.domain;
 
 import com.google.gson.JsonObject;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kurento.client.Continuation;
 import org.kurento.client.IceCandidate;
