@@ -31,8 +31,6 @@ public class Room implements Closeable {
         return roomId;
     }
 
-    public MediaPipeline getPipeline() { return  pipeline; }
-
     public List<UserSession> getAllUserSessions() {
         return new ArrayList<>(participants.values());
     }
