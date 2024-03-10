@@ -72,7 +72,7 @@ public class Room implements Closeable {
     public ConcurrentMap<String, UserSession> notifyParticipantsOfExisting(UserSession newParticipant) {
         for (UserSession existingParticipant : participants.values()) {
             final JsonObject existingParticipantMsg = new JsonObject();
-            existingParticipantMsg.addProperty("id", "ExistingParticipant");
+            existingParticipantMsg.addProperty("id", "existingParticipant");
             existingParticipantMsg.addProperty("name", existingParticipant.getName());
             newParticipant.sendMessage(existingParticipantMsg);
         }
