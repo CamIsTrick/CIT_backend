@@ -49,6 +49,7 @@ public class RoomFollowerAction implements KurentoAction {
                 .orElseThrow(NoSuchElementException::new);
         UserSession participant = findRoom.join(username, roomId, session);
         findRoom.notifyParticipantsOfNewUser(participant);
+        findRoom.notifyParticipantsOfExisting(participant);
     }
 
     @Override

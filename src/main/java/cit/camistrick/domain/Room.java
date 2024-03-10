@@ -69,6 +69,16 @@ public class Room implements Closeable {
         broadcastMessage(newParticipant, newParticipantMsg);
     }
 
+    public ConcurrentMap<String, UserSession> notifyParticipantsOfExisting(UserSession newParticipant) {
+        for (UserSession existingParticipant : participants.values()) {
+            final JsonObject existingParticipantMsg = new JsonObject();
+            existingParticipantMsg.addProperty("id", "ExistingParticipant");
+            existingParticipantMsg.addProperty("name", existingParticipant.getName());
+            newParticipant.sendMessage(existingParticipantMsg);
+        }
+        return participants;
+    }
+
     private void notifyParticipantsOfUserLeaving(UserSession leavingUser) throws IOException {
         final JsonObject participantLeftMsg = new JsonObject();
         participantLeftMsg.addProperty("id", "participantLeft");
