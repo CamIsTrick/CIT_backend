@@ -4,12 +4,89 @@ on:
     branches: [ "main","develop" ]
 
 jobs:
-  Deploy:
-    runs-on: ubuntu-latest
+  build-and-push:
+    name: upload
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: webfactory/ssh-agent@v0.9.0
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
-          ssh-private-key: ${{ secrets.KEY }}
-      - name: Run Script
-        run: ls -al;
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Build and push - kurento
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile_kurento
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/cit_kurento:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push - nginx
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile_nginx
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/cit_nginx:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push - spring
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile_spring
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/cit_spring:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: copy file via ssh key
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          port: ${{ secrets.PORT }}
+          key: ${{ secrets.KEY }}
+          source: "docker-compose.yml"
+          target: '/home/ubuntu/'
+          override: true
+
+  deploy:
+    name: deploy
+    needs: build-and-push
+    runs-on: ubuntu-20.04
+    steps:
+      - name: executing remote ssh commands using key
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          envs: DOCKER_HUB_ACCESS_TOKEN,DOCKER_HUB_USERNAME
+          script: |
+            cd /home/ubuntu
+            docker image rm -f $(docker image ls -q)
+            echo $DOCKER_HUB_ACCESS_TOKEN | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+            docker pull $DOCKER_HUB_USERNAME/cit_kurento:latest
+            docker pull $DOCKER_HUB_USERNAME/cit_nginx:latest
+            docker pull $DOCKER_HUB_USERNAME/cit_spring:latest
+            docker-compose up -d
+            
+
+
+
+

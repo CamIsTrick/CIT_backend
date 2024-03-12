@@ -1,0 +1,7 @@
+FROM kurento/kurento-media-server:latest
+LABEL authors="junpyohong"
+WORKDIR /data
+
+ENV KMS_STUN_IP=stun.l.google.com \
+    KMS_STUN_PORT=19302 \
+    KMS_EXTERNAL_IPV4=3.39.179.45

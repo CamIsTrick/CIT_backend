@@ -1,30 +1,22 @@
 version: '3.7'
 services:
   kurento:
+    image: cit_kurento:latest
     container_name: kurento
     restart: always
-    image: kurento/kurento-media-server:7.0.0
     network_mode: host
-    environment:
-      - KMS_STUN_IP= stun.l.google.com
-      - KMS_STUN_PORT= 19302
-      - KMS_EXTERNAL_IPV4= 3.39.179.45
 
   nginx:
+    image: cit_nginx:latest
     container_name: nginx
     restart: always
-    build:
-      context: .
-      dockerfile: Dockerfile_Nginx
     ports:
       - "80:80"
       - "443:443"
 
   spring:
     depends_on: [ kurento,nginx ]
+    image: cit_spring:latest
     container_name: spring
-    build:
-      context: .
-      dockerfile: Dockerfile_Spring
     ports:
       - "8081:8081"
