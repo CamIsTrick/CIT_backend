@@ -1,13 +1,13 @@
 version: '3.7'
 services:
   kurento:
-    image: cit_kurento:latest
+    image: ${DOCKER_USERNAME}/cit_kurento:latest
     container_name: kurento
     restart: always
     network_mode: host
 
   nginx:
-    image: cit_nginx:latest
+    image: ${DOCKER_USERNAME}/cit_nginx:latest
     container_name: nginx
     restart: always
     ports:
@@ -16,7 +16,7 @@ services:
 
   spring:
     depends_on: [ kurento,nginx ]
-    image: cit_spring:latest
+    image: ${DOCKER_USERNAME}/cit_spring:latest
     container_name: spring
     ports:
       - "8081:8081"
