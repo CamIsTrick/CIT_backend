@@ -45,6 +45,7 @@ public class HandleSdpOfferAction implements KurentoAction {
     private void processVideoOffer(UserSession sender, UserSession recipient, JsonObject jsonMessage) {
         String sdpAnswer = setupRecipientForVideoReception(sender, recipient, jsonMessage);
         sendSdpAnswerToRecipient(recipient, sender, sdpAnswer);
+        gatherCandidates(recipient, sender);
     }
 
     private String setupRecipientForVideoReception(UserSession sender, UserSession recipient, JsonObject jsonMessage) {
@@ -60,6 +61,11 @@ public class HandleSdpOfferAction implements KurentoAction {
 
         log.trace("USER {}: SdpAnswer for {} is {}", recipient.getName(), sender.getName(), sdpAnswer);
         recipient.sendMessage(scParams);
+    }
+
+    private void gatherCandidates(UserSession recipient, UserSession sender) {
+        log.debug("Gathering candidates for user: {}", recipient.getName());
+        recipient.gatherCandidates(sender);
     }
 
     @Override
