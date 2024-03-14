@@ -30,12 +30,11 @@ public class UserSession implements Closeable {
         this.session = session;
         this.roomId = roomId;
         this.outgoingMedia = createWebRtcEndpoint();
-        addIceCandidateListener(this.outgoingMedia, this.name);
+        addIceCandidateListener(this.outgoingMedia, getSessionId());
     }
 
     public static UserSession createUserSession(String name, String roomId, WebSocketSession session, MediaPipeline pipeline) {
-        UserSession user = new UserSession(name, roomId, session, pipeline);
-        return user;
+        return new UserSession(name, roomId, session, pipeline);
     }
 
     private WebRtcEndpoint createWebRtcEndpoint() {
@@ -105,7 +104,7 @@ public class UserSession implements Closeable {
     }
 
     private boolean isLoopback(UserSession sender) {
-        boolean loopback = sender.getName().equals(name);
+        boolean loopback = sender.getSessionId().equals(this.getSessionId());
         if (loopback) {
             log.debug("PARTICIPANT {}: configuring loopback", this.name);
         }
@@ -113,21 +112,21 @@ public class UserSession implements Closeable {
     }
 
     private WebRtcEndpoint getIncomingEndpoint(UserSession sender) {
-        return incomingMedia.get(sender.getName());
+        return incomingMedia.get(sender.getSessionId());
     }
 
     private WebRtcEndpoint createAndRegisterIncomingEndpoint(UserSession sender) {
         WebRtcEndpoint incoming = createWebRtcEndpoint();
-        addIceCandidateListener(incoming, sender.getName());
-        incomingMedia.put(sender.getName(), incoming);
+        addIceCandidateListener(incoming, sender.getSessionId());
+        incomingMedia.put(sender.getSessionId(), incoming);
         return incoming;
     }
 
-    public void cancelVideoFrom(final String senderName) {
-        log.debug("PARTICIPANT {}: canceling video reception from {}", this.name, senderName);
-        final WebRtcEndpoint incoming = incomingMedia.remove(senderName);
+    public void cancelVideoFrom(final String senderSessionId) {
+        log.debug("PARTICIPANT {}: canceling video reception from {}", this.name, senderSessionId);
+        final WebRtcEndpoint incoming = incomingMedia.remove(senderSessionId);
 
-        releaseEndpoint(senderName, incoming);
+        releaseEndpoint(senderSessionId, incoming);
     }
 
     private void releaseEndpoint(String endpointName, WebRtcEndpoint endpoint) {
@@ -149,14 +148,14 @@ public class UserSession implements Closeable {
     public void close() {
         log.debug("PARTICIPANT {}: Releasing resources", this.name);
         releaseAllIncomingEndpoints();
-        releaseEndpoint(this.name, outgoingMedia);
+        releaseEndpoint(this.getSessionId(), outgoingMedia);
     }
 
     private void releaseAllIncomingEndpoints() {
-        incomingMedia.keySet().forEach(remoteParticipantName -> {
-            log.trace("PARTICIPANT {}: Released incoming EP for {}", this.name, remoteParticipantName);
-            final WebRtcEndpoint ep = this.incomingMedia.get(remoteParticipantName);
-            releaseEndpoint(remoteParticipantName, ep);
+        incomingMedia.keySet().forEach(remoteParticipantSessionId -> {
+            log.trace("PARTICIPANT {}: Released incoming EP for {}", this.name, remoteParticipantSessionId);
+            final WebRtcEndpoint ep = this.incomingMedia.get(remoteParticipantSessionId);
+            releaseEndpoint(remoteParticipantSessionId, ep);
         });
     }
 
@@ -172,16 +171,16 @@ public class UserSession implements Closeable {
         }
     }
 
-    public void addCandidate(IceCandidate candidate, String name) {
-        if (this.name.equals(name)) {
-            log.info("USER {} : outgoingMedia.addIceCandidate : {} ", this.name, name);
+    public void addCandidate(IceCandidate candidate, String sessionId) {
+        if (this.getSessionId().equals(sessionId)) {
+            log.info("USER {} : outgoingMedia.addIceCandidate : {} ", this.name, sessionId);
             outgoingMedia.addIceCandidate(candidate);
             return;
         }
 
-        WebRtcEndpoint webRtc = incomingMedia.get(name);
+        WebRtcEndpoint webRtc = incomingMedia.get(sessionId);
         if (webRtc != null) {
-            log.info("USER {} : incoming.addIceCandidate to {} ", this.name, name);
+            log.info("USER {} : incoming.addIceCandidate to {} ", this.name, sessionId);
             webRtc.addIceCandidate(candidate);
         }
     }

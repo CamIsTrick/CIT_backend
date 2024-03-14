@@ -3,6 +3,7 @@ package cit.camistrick.action;
 import cit.camistrick.domain.Room;
 import cit.camistrick.domain.UserSession;
 import cit.camistrick.service.RoomManager;
+import cit.camistrick.service.UserSessionService;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,9 @@ import java.util.NoSuchElementException;
 @Slf4j
 @RequiredArgsConstructor
 public class RoomFollowerAction implements KurentoAction {
+
     private final RoomManager roomManager;
+    private final UserSessionService userSessionService;
 
     @Override
     public void process(WebSocketSession session, JsonObject jsonMessage) throws IOException {
@@ -47,6 +50,7 @@ public class RoomFollowerAction implements KurentoAction {
         Room findRoom = roomManager.findRoom(roomId)
                 .orElseThrow(NoSuchElementException::new);
         UserSession participant = findRoom.join(username, roomId, session);
+        userSessionService.register(participant);
         findRoom.notifyParticipantsOfNewUser(participant);
         findRoom.notifyParticipantsOfExisting(participant);
     }
