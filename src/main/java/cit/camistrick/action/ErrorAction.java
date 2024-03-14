@@ -19,6 +19,6 @@ public class ErrorAction implements KurentoAction {
 
     @Override
     public void onError() {
-        log.error("RoomFollowerAction : Error Occurred");
+        log.error("ErrorAction : Error Occurred");
     }
 }
