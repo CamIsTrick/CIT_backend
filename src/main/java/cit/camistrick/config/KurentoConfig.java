@@ -1,5 +1,6 @@
 package cit.camistrick.config;
 
+import cit.camistrick.action.ErrorAction;
 import cit.camistrick.action.RoomFollowerAction;
 import cit.camistrick.action.RoomLeaderAction;
 import cit.camistrick.handler.KurentoActionResolver;
