@@ -12,7 +12,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-@Service
 @Slf4j
 public class UserSessionService implements AutoCloseable {
 

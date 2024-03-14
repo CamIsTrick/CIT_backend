@@ -49,15 +49,16 @@ public class KurentoConfig implements WebSocketConfigurer {
 
     @Bean
     public WebSocketHandler kurentoHandler() {
-        KurentoActionResolver kurentoActionResolver = configKurentoHandler();
-        return new WebSocketHandler(kurentoActionResolver);
+        return new WebSocketHandler(kurentoActionResolver());
     }
 
     @Bean
-    public KurentoActionResolver configKurentoHandler() {
+    public KurentoActionResolver kurentoActionResolver() {
+        RoomManager roomManager = roomManager();
+        UserSessionService userSessionService = userSessionService();
         return new KurentoActionResolver(Map.of(
-                "createRoom", new RoomLeaderAction(roomManager(), userSessionService()),
-                "joinRoom", new RoomFollowerAction(roomManager(), userSessionService())
+                "createRoom", new RoomLeaderAction(roomManager, userSessionService),
+                "joinRoom", new RoomFollowerAction(roomManager, userSessionService)
         ));
     }
 
