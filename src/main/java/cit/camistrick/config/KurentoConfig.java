@@ -5,7 +5,9 @@ import cit.camistrick.action.RoomFollowerAction;
 import cit.camistrick.action.RoomLeaderAction;
 import cit.camistrick.handler.KurentoActionResolver;
 import cit.camistrick.handler.WebSocketHandler;
+import cit.camistrick.repository.MemoryUserSessionRepository;
 import cit.camistrick.service.RoomManager;
+import cit.camistrick.service.UserSessionService;
 import org.kurento.client.KurentoClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -48,21 +50,26 @@ public class KurentoConfig implements WebSocketConfigurer {
 
     @Bean
     public WebSocketHandler kurentoHandler() {
-        KurentoActionResolver kurentoActionResolver = configKurentoHandler();
-        return new WebSocketHandler(kurentoActionResolver);
+        return new WebSocketHandler(kurentoActionResolver());
     }
 
     @Bean
-    public KurentoActionResolver configKurentoHandler() {
+    public KurentoActionResolver kurentoActionResolver() {
+        RoomManager roomManager = roomManager();
+        UserSessionService userSessionService = userSessionService();
         return new KurentoActionResolver(Map.of(
-                "createRoom", new RoomLeaderAction(roomManager()),
-                "joinRoom", new RoomFollowerAction(roomManager()),
-                "error", new ErrorAction()
+                "createRoom", new RoomLeaderAction(roomManager, userSessionService),
+                "joinRoom", new RoomFollowerAction(roomManager, userSessionService)
         ));
     }
 
     @Bean
     public RoomManager roomManager() {
         return new RoomManager(kurentoClient());
+    }
+
+    @Bean
+    public UserSessionService userSessionService() {
+        return new UserSessionService(new MemoryUserSessionRepository());
     }
 }
