@@ -20,9 +20,9 @@ public class HandleSdpOfferAction implements KurentoAction {
         }
 
         UserSession sender = getSender(jsonMessage);
-        UserSession recipient = getRecipient(session);
+        UserSession receiver = getReceiver(session);
 
-        processVideoOffer(sender, recipient, jsonMessage);
+        processVideoOffer(sender, receiver, jsonMessage);
     }
 
     private boolean isValidMessage(JsonObject jsonMessage) {
@@ -38,34 +38,34 @@ public class HandleSdpOfferAction implements KurentoAction {
         return userSessionService.findSession(senderSessionId);
     }
 
-    private UserSession getRecipient(WebSocketSession session) {
+    private UserSession getReceiver(WebSocketSession session) {
         return userSessionService.findSession(session.getId());
     }
 
-    private void processVideoOffer(UserSession sender, UserSession recipient, JsonObject jsonMessage) {
-        String sdpAnswer = setupRecipientForVideoReception(sender, recipient, jsonMessage);
-        sendSdpAnswerToRecipient(recipient, sender, sdpAnswer);
-        gatherCandidates(recipient, sender);
+    private void processVideoOffer(UserSession sender, UserSession receiver, JsonObject jsonMessage) {
+        String sdpAnswer = initReceiverForVideoReception(sender, receiver, jsonMessage);
+        sendSdpAnswerToReceiver(receiver, sender, sdpAnswer);
+        gatherCandidates(receiver, sender);
     }
 
-    private String setupRecipientForVideoReception(UserSession sender, UserSession recipient, JsonObject jsonMessage) {
+    private String initReceiverForVideoReception(UserSession sender, UserSession receiver, JsonObject jsonMessage) {
         String sdpOffer = jsonMessage.get("sdpOffer").getAsString();
-        return recipient.prepareToReceiveVideoFrom(sender, sdpOffer);
+        return receiver.prepareToReceiveVideoFrom(sender, sdpOffer);
     }
 
-    private void sendSdpAnswerToRecipient(UserSession recipient, UserSession sender, String sdpAnswer) {
+    private void sendSdpAnswerToReceiver(UserSession receiver, UserSession sender, String sdpAnswer) {
         JsonObject scParams = new JsonObject();
         scParams.addProperty("id", "receiveVideoAnswer");
         scParams.addProperty("name", sender.getName());
         scParams.addProperty("sdpAnswer", sdpAnswer);
 
-        log.trace("USER {}: SdpAnswer for {} is {}", recipient.getName(), sender.getName(), sdpAnswer);
-        recipient.sendMessage(scParams);
+        log.trace("USER {}: SdpAnswer for {} is {}", receiver.getName(), sender.getName(), sdpAnswer);
+        receiver.sendMessage(scParams);
     }
 
-    private void gatherCandidates(UserSession recipient, UserSession sender) {
-        log.debug("Gathering candidates for user: {}", recipient.getName());
-        recipient.gatherCandidates(sender);
+    private void gatherCandidates(UserSession receiver, UserSession sender) {
+        log.debug("Gathering candidates for user: {}", receiver.getName());
+        receiver.gatherCandidates(sender);
     }
 
     @Override
