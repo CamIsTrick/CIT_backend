@@ -61,7 +61,8 @@ public class KurentoConfig implements WebSocketConfigurer {
         return new KurentoActionResolver(Map.of(
                 "createRoom", new RoomLeaderAction(roomManager, userSessionService),
                 "joinRoom", new RoomFollowerAction(roomManager, userSessionService),
-                "receiveVideoFrom", new HandleSdpOfferAction(userSessionService)
+                "receiveVideoFrom", new HandleSdpOfferAction(userSessionService),
+                "error", new ErrorAction()
         ));
     }
 
