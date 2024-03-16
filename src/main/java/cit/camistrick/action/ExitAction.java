@@ -26,16 +26,26 @@ public class ExitAction implements KurentoAction {
         leaveUser(findUser);
     }
 
+    private void leaveUser(UserSession findUser) throws IOException{
+        userSessionService.removeSession(findUser.getSessionId());
+        Room leavingRoom = getRoom(findUser.getRoomId());
+        leavingRoom.leave(findUser);
+        closeRoom(leavingRoom);
+    }
+
     private UserSession getUserSession(JsonObject jsonMessage) {
         return userSessionService.findSession(jsonMessage.get("id").getAsString());
     }
 
-    private void leaveUser(UserSession findUser) throws IOException{
-        userSessionService.removeSession(findUser.getSessionId());
-        Room leavingRoom = roomManager.findRoom(findUser.getRoomId())
+    private Room getRoom(String roomId) {
+        return roomManager.findRoom(roomId)
                 .orElseThrow(NoSuchElementException::new);
-        leavingRoom.leave(findUser);
-        roomManager.removeRoom(leavingRoom);
+    }
+
+    private void closeRoom(Room leavingRoom) {
+        if (leavingRoom.getParticipants() == null) {
+            roomManager.removeRoom(leavingRoom);
+        }
     }
 
     @Override
