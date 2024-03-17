@@ -26,8 +26,10 @@ public class IceCandidateAction implements KurentoAction {
         /*
         username이 중복 가능이기때문에 현재는 session Id를 통해서 outgoing과 incoming을 구분
          */
-        userSession.addCandidate(iceCandidate, requestDto.getName());
+        /*
 
+         */
+        userSession.addCandidate(iceCandidate, userSession.getSessionId());
     }
 
     @Override

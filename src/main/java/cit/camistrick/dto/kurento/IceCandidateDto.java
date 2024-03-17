@@ -9,7 +9,7 @@ public class IceCandidateDto {
     @Getter
     public static class Request extends KurentoDto {
         private String id;
-        private String name;
+        private String sessionId;
         private Candidate candidate;
     }
 
