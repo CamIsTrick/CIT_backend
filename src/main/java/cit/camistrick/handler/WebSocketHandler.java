@@ -36,7 +36,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     private void processByAction(WebSocketSession session, JsonObject jsonMessage, KurentoAction action) {
         try {
-            log.info("Receive ID [{}] from {} ", jsonMessage.get("id"), session.getId());
+            log.info("Receive [{}] from {} ", actions.getClass(), session.getId());
             action.process(session, jsonMessage);
         } catch (IOException e) {
             action.onError();
