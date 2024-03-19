@@ -21,15 +21,8 @@ public class RoomFollowerAction implements KurentoAction {
 
     @Override
     public void process(WebSocketSession session, JsonObject jsonMessage) throws IOException {
-        String userId = jsonMessage.get("id").getAsString();
         String username = jsonMessage.get("name").getAsString();
         String roomId = jsonMessage.get("roomId").getAsString();
-
-        if (userId == null) {
-            log.error("User ID value is null");
-        } else {
-            log.info("id : {}", userId);
-        }
 
         if (username == null) {
             log.error("Name value is null");
