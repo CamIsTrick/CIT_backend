@@ -69,7 +69,7 @@ public class Room implements Closeable {
         broadcastMessage(newParticipant, newParticipantMsg);
     }
 
-    public ConcurrentMap<String, UserSession> notifyParticipantsOfExisting(UserSession newParticipant) {
+    public void notifyParticipantsOfExisting(UserSession newParticipant) {
         for (UserSession existingParticipant : participants.values()) {
             if (!newParticipant.equals(existingParticipant)) {
                 final JsonObject existingParticipantMsg = new JsonObject();
@@ -78,7 +78,6 @@ public class Room implements Closeable {
                 newParticipant.sendMessage(existingParticipantMsg);
             }
         }
-        return participants;
     }
 
     private void notifyParticipantsOfUserLeaving(UserSession leavingUser) throws IOException {
