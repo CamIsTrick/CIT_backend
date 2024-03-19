@@ -1,10 +1,7 @@
 package cit.camistrick.config;
 
-import cit.camistrick.action.ErrorAction;
-import cit.camistrick.action.ExitAction;
-import cit.camistrick.action.HandleSdpOfferAction;
-import cit.camistrick.action.RoomFollowerAction;
-import cit.camistrick.action.RoomLeaderAction;
+
+import cit.camistrick.action.*;
 import cit.camistrick.handler.KurentoActionResolver;
 import cit.camistrick.handler.WebSocketHandler;
 import cit.camistrick.repository.MemoryUserSessionRepository;
@@ -64,6 +61,7 @@ public class KurentoConfig implements WebSocketConfigurer {
                 "joinRoom", new RoomFollowerAction(roomManager, userSessionService),
                 "exitRoom", new ExitAction(roomManager, userSessionService),
                 "receiveVideoFrom", new HandleSdpOfferAction(userSessionService),
+                "onIceCandidate", new IceCandidateAction(userSessionService),
                 "error", new ErrorAction()
         ));
     }
