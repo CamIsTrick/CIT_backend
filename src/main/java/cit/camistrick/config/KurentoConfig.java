@@ -1,5 +1,6 @@
 package cit.camistrick.config;
 
+
 import cit.camistrick.action.*;
 import cit.camistrick.handler.KurentoActionResolver;
 import cit.camistrick.handler.WebSocketHandler;
@@ -58,6 +59,7 @@ public class KurentoConfig implements WebSocketConfigurer {
         return new KurentoActionResolver(Map.of(
                 "createRoom", new RoomLeaderAction(roomManager, userSessionService),
                 "joinRoom", new RoomFollowerAction(roomManager, userSessionService),
+                "exitRoom", new ExitAction(roomManager, userSessionService),
                 "receiveVideoFrom", new HandleSdpOfferAction(userSessionService),
                 "onIceCandidate", new IceCandidateAction(userSessionService),
                 "error", new ErrorAction()
