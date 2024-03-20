@@ -22,11 +22,16 @@ public class ExitAction implements KurentoAction {
 
     @Override
     public void process(WebSocketSession session, JsonObject jsonMessage) throws IOException {
-
+        String id = jsonMessage.get("id").getAsString();
         String sessionId = jsonMessage.get("sessionId").getAsString();
 
+        if (id == null) {
+            log.error("ID value is null");
+        } else {
+            log.info("id : {}", id);
+        }
         if (sessionId == null) {
-            log.error("sessionId value is null");
+            log.error("Session Id value is null");
         } else {
             log.info("sessionId : {}", sessionId);
         }
