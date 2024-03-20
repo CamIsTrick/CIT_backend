@@ -25,12 +25,7 @@ public class RoomLeaderAction implements KurentoAction {
         String username = jsonMessage.get("name").getAsString();
 
         log.info("id : {}", id);
-        
-        if (username == null) {
-            log.error("Name value is null");
-        } else {
-            log.info("name : {}", username);
-        }
+        log.info("name : {}", username);
 
         createRoomAndSession(session, username);
     }
