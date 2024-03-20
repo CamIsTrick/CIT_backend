@@ -26,12 +26,7 @@ public class ExitAction implements KurentoAction {
         String sessionId = jsonMessage.get("sessionId").getAsString();
 
         log.info("id : {}", id);
-        
-        if (sessionId == null) {
-            log.error("Session Id value is null");
-        } else {
-            log.info("sessionId : {}", sessionId);
-        }
+        log.info("sessionId : {}", sessionId);
 
         UserSession findUser = getUserSession(sessionId);
         leaveUser(findUser);
