@@ -26,19 +26,9 @@ public class RoomFollowerAction implements KurentoAction {
         String roomId = jsonMessage.get("roomId").getAsString();
 
         log.info("id : {}", id);
+        log.info("name : {}", username);
+        log.info("roomId : {}", roomId);
         
-        if (username == null) {
-            log.error("Name value is null");
-        } else {
-            log.info("name : {}", username);
-        }
-
-        if (roomId == null) {
-            log.error("Room ID value is null");
-        } else {
-            log.info("roomId : {}", roomId);
-        }
-
         joinRoom(session, username, roomId);
     }
 
