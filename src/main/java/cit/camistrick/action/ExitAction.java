@@ -22,7 +22,13 @@ public class ExitAction implements KurentoAction {
 
     @Override
     public void process(WebSocketSession session, JsonObject jsonMessage) throws IOException {
-        UserSession findUser = getUserSession(jsonMessage);
+        String id = jsonMessage.get("id").getAsString();
+        String sessionId = jsonMessage.get("sessionId").getAsString();
+
+        log.info("id : {}", id);
+        log.info("sessionId : {}", sessionId);
+
+        UserSession findUser = getUserSession(sessionId);
         leaveUser(findUser);
     }
 
@@ -33,8 +39,8 @@ public class ExitAction implements KurentoAction {
         closeRoom(leavingRoom);
     }
 
-    private UserSession getUserSession(JsonObject jsonMessage) {
-        return userSessionService.findSession(jsonMessage.get("id").getAsString());
+    private UserSession getUserSession(String sessionId) {
+        return userSessionService.findSession(sessionId);
     }
 
     private Room getRoom(String roomId) {
