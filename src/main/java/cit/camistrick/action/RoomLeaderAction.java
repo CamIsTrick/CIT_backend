@@ -21,8 +21,14 @@ public class RoomLeaderAction implements KurentoAction {
     @Override
     public void process(WebSocketSession session, JsonObject jsonMessage) throws IOException {
 
+        String id = jsonMessage.get("id").getAsString();
         String username = jsonMessage.get("name").getAsString();
 
+        if (id == null) {
+            log.error("ID value is null");
+        } else {
+            log.info("id : {}", id);
+        }
         if (username == null) {
             log.error("Name value is null");
         } else {
