@@ -1,5 +1,6 @@
 package cit.camistrick.domain;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.kurento.client.Continuation;
@@ -70,14 +71,18 @@ public class Room implements Closeable {
     }
 
     public void notifyParticipantsOfExisting(UserSession newParticipant) {
+        JsonArray namesArray = new JsonArray();
+
         for (UserSession existingParticipant : participants.values()) {
             if (!newParticipant.equals(existingParticipant)) {
-                final JsonObject existingParticipantMsg = new JsonObject();
-                existingParticipantMsg.addProperty("id", "existingParticipant");
-                existingParticipantMsg.addProperty("name", existingParticipant.getName());
-                newParticipant.sendMessage(existingParticipantMsg);
+                namesArray.add(existingParticipant.getName());
             }
         }
+
+        final JsonObject existingParticipantMsg = new JsonObject();
+        existingParticipantMsg.addProperty("id", "existingParticipant");
+        existingParticipantMsg.add("name", namesArray);
+        newParticipant.sendMessage(existingParticipantMsg);
     }
 
     private void notifyParticipantsOfUserLeaving(UserSession leavingUser) throws IOException {
