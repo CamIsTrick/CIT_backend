@@ -2,7 +2,7 @@ package cit.camistrick.action;
 
 import cit.camistrick.domain.Room;
 import cit.camistrick.domain.UserSession;
-import cit.camistrick.service.RoomManager;
+import cit.camistrick.service.RoomService;
 import cit.camistrick.service.UserSessionService;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class RoomLeaderAction implements KurentoAction {
 
-    private final RoomManager roomManager;
+    private final RoomService roomService;
     private final UserSessionService userSessionService;
 
     @Override
@@ -31,7 +31,7 @@ public class RoomLeaderAction implements KurentoAction {
     }
 
     private void createRoomAndSession(WebSocketSession session, String username) {
-        Room room = roomManager.createRoom();
+        Room room = roomService.createRoom();
         UserSession participant = room.join(username, room.getRoomId(), session);
         userSessionService.register(participant);
     }

@@ -2,7 +2,7 @@ package cit.camistrick.action;
 
 import cit.camistrick.domain.Room;
 import cit.camistrick.domain.UserSession;
-import cit.camistrick.service.RoomManager;
+import cit.camistrick.service.RoomService;
 import cit.camistrick.service.UserSessionService;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class RoomFollowerAction implements KurentoAction {
 
-    private final RoomManager roomManager;
+    private final RoomService roomService;
     private final UserSessionService userSessionService;
 
     @Override
@@ -33,7 +33,7 @@ public class RoomFollowerAction implements KurentoAction {
     }
 
     private void joinRoom(WebSocketSession session, String username, String roomId) {
-        Room findRoom = roomManager.findRoom(roomId)
+        Room findRoom = roomService.findRoom(roomId)
                 .orElseThrow(NoSuchElementException::new);
         UserSession participant = findRoom.join(username, roomId, session);
         userSessionService.register(participant);

@@ -1,7 +1,7 @@
 package cit.camistrick.controller;
 
 import cit.camistrick.dto.RoomResponse.RoomDto;
-import cit.camistrick.service.RoomManager;
+import cit.camistrick.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("rooms")
 @RequiredArgsConstructor
 public class RoomController {
-    private final RoomManager roomManager;
+    private final RoomService roomService;
 
     @GetMapping()
     public ResponseEntity<RoomDto> checkRoom(@RequestParam("roomId") String roomId) {
-        boolean isExist = roomManager
+        boolean isExist = roomService
                 .findRoom(roomId)
                 .isPresent();
 

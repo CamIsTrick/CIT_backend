@@ -2,7 +2,7 @@ package cit.camistrick.action;
 
 import cit.camistrick.domain.Room;
 import cit.camistrick.domain.UserSession;
-import cit.camistrick.service.RoomManager;
+import cit.camistrick.service.RoomService;
 import cit.camistrick.service.UserSessionService;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class ExitAction implements KurentoAction {
 
-    private final RoomManager roomManager;
+    private final RoomService roomService;
     private final UserSessionService userSessionService;
 
     @Override
@@ -44,13 +44,13 @@ public class ExitAction implements KurentoAction {
     }
 
     private Room getRoom(String roomId) {
-        return roomManager.findRoom(roomId)
+        return roomService.findRoom(roomId)
                 .orElseThrow(NoSuchElementException::new);
     }
 
     private void closeRoom(Room leavingRoom) {
         if (leavingRoom.getParticipants() == null) {
-            roomManager.removeRoom(leavingRoom);
+            roomService.removeRoom(leavingRoom.getRoomId());
         }
     }
 
