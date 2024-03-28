@@ -20,16 +20,22 @@ import java.util.concurrent.ConcurrentMap;
 public class Room implements Closeable {
     private final ConcurrentMap<String, UserSession> participants = new ConcurrentHashMap<>();
     private final String roomId;
+    private final int entryCode;
     private final MediaPipeline pipeline;
 
-    public Room(String roomId, MediaPipeline pipeline) {
+    public Room(String roomId, int entryCode, MediaPipeline pipeline) {
         this.roomId = roomId;
+        this.entryCode = entryCode;
         this.pipeline = pipeline;
         log.info("ROOM [{}] has been created", roomId);
     }
 
     public String getRoomId() {
         return roomId;
+    }
+
+    public int getEntryCode() {
+        return entryCode;
     }
 
     public List<UserSession> getAllUserSessions() {

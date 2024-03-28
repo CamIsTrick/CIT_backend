@@ -2,7 +2,7 @@ package cit.camistrick.action;
 
 import cit.camistrick.domain.Room;
 import cit.camistrick.domain.UserSession;
-import cit.camistrick.service.RoomManager;
+import cit.camistrick.service.RoomService;
 import cit.camistrick.service.UserSessionService;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class RoomLeaderAction implements KurentoAction {
 
-    private final RoomManager roomManager;
+    private final RoomService roomService;
     private final UserSessionService userSessionService;
 
     @Override
@@ -27,13 +27,36 @@ public class RoomLeaderAction implements KurentoAction {
         log.info("id : {}", id);
         log.info("name : {}", username);
 
-        createRoomAndSession(session, username);
+        createRoomProcess(session, username);
     }
 
-    private void createRoomAndSession(WebSocketSession session, String username) {
-        Room room = roomManager.createRoom();
+    private void createRoomProcess(WebSocketSession session, String username) {
+        Room room = createRoom();
+        UserSession participant = joinRoom(session, username, room);
+        sendRoomInfo(room, participant);
+    }
+
+    private Room createRoom() {
+        return roomService.createRoom();
+    }
+
+    private UserSession joinRoom(WebSocketSession session, String username, Room room) {
         UserSession participant = room.join(username, room.getRoomId(), session);
         userSessionService.register(participant);
+        return participant;
+    }
+
+    private void sendRoomInfo(Room room, UserSession receiver) {
+        String roomURL = roomService.getRoomURL(room.getEntryCode());
+
+        JsonObject scParams = new JsonObject();
+        scParams.addProperty("id", "createRoomResponse");
+        scParams.addProperty("roomId", room.getRoomId());
+        scParams.addProperty("entryCode", room.getEntryCode());
+        scParams.addProperty("roomURL", roomURL);
+
+        log.trace("USER SessionID {}: createRoomResponse is {}", receiver.getSessionId(), room.getRoomId());
+        receiver.sendMessage(scParams);
     }
 
     @Override
