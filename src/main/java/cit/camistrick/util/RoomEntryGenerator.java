@@ -19,11 +19,9 @@ public class RoomEntryGenerator {
     }
 
     private static int generateCode() {
-        int roomCode = 0;
-        for (int i = 0; i < ENTRY_CODE_LENGTH; i++) {
-            roomCode += (int)(Math.random() * 10) * Math.pow(10, ENTRY_CODE_LENGTH - i - 1);
-        }
-        return roomCode;
+        int min = (int) Math.pow(10, ENTRY_CODE_LENGTH - 1);
+        int max = (int) Math.pow(10, ENTRY_CODE_LENGTH);
+        return min + (int) (Math.random() * (max - min));
     }
 
     public static String roomURL(int roomCode) {

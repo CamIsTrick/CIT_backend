@@ -54,6 +54,8 @@ class RoomEntryGeneratorTest {
         int roomCode = RoomEntryGenerator.randomCode();
         String roomURL = RoomEntryGenerator.roomURL(roomCode);
 
+        System.out.println(roomCode);
+        System.out.println(roomURL);
         assertNotNull(roomURL, "not-null.");
         assertTrue(roomURL.matches("^/room/[a-f0-9]{64}$"), "expected format.");
     }
