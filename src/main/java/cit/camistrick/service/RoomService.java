@@ -24,13 +24,15 @@ public class RoomService {
     public Room createRoom() {
         String roomId = UUID.randomUUID().toString();
         log.debug("Room {} not exist. Creating now!", roomId);
-
         int entryCode = RoomEntryGenerator.randomCode();
-        String roomURL = RoomEntryGenerator.roomURL(entryCode);
 
         Room room = new Room(roomId, entryCode, kurento.createMediaPipeline());
         roomRepository.add(room);
         return room;
+    }
+
+    public String getRoomURL(int entryCode) {
+        return RoomEntryGenerator.roomURL(entryCode);
     }
 
     public void removeRoom(String roomId) {
